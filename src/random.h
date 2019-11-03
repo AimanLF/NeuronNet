@@ -28,7 +28,7 @@ public:
   The additional parameters are the standard parameters of these distributions.
  */
 ///@{
-    void uniform_double(std::vector<double>&, double lower=0, double upper=1);
+    void uniform_double(std::vector<double>& tab, double lower=0, double upper=1);
     double uniform_double(double lower=0, double upper=1);
     void normal(std::vector<double>&, double mean=0, double sd=1);
     double normal(double mean=0, double sd=1);

@@ -1,6 +1,7 @@
 #include "network.h"
 #include "random.h"
 
+
 void Network::resize(const size_t &n, double inhib) {
     size_t old = size();
     neurons.resize(n);
@@ -127,4 +128,80 @@ void Network::print_traj(const int time, const std::map<std::string, size_t> &_n
                 break;
             }
     (*_out) << std::endl;
+}
+
+//My methods -------------------------------------------------------------------------------
+
+std::pair<size_t, double> Network::degree(const size_t& n) const
+{
+	std::vector<std::pair<size_t, double>> connected_neurons(neighbors(n));
+	double valence(0);
+	
+	if(connected_neurons.empty()) {
+		return {0,0};
+	}
+	
+	for(size_t n=0; n < connected_neurons.size(); n++) {
+			valence += connected_neurons[n].second;
+	}
+	
+	return {connected_neurons.size(), valence};
+}
+
+std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& n) const
+{
+	std::vector<std::pair<size_t, double>> connected_neurons;
+	std::pair<size_t, double> temp;
+	
+	for(const auto& link : links) {
+		if (link.first.first == n) {              
+			connected_neurons.push_back({link.first.second, link.second});
+			
+		} /*else if (link.first.second == n) {
+			connected_neurons.push_back({link.first.first, link.second});
+			}*/
+	}
+
+	return connected_neurons;
+}
+	
+std::set<size_t> Network::step(const std::vector<double>& thalamic_values)
+{
+	std::set<size_t> firing_neurons;
+	
+	for(size_t n=0; n < neurons.size(); n++) {
+		
+		if(neurons[n].firing()) {
+			firing_neurons.insert(n);
+			neurons[n].reset();
+		}
+		
+		double excitators_link(0);
+		double inibitors_link(0);
+	
+		for(auto neuron : neighbors(n)) {
+			if(neurons[neuron.first].firing()) {
+			
+				if(neurons[neuron.first].is_inhibitory()) {
+					inibitors_link += neuron.second;
+			
+				} else {
+					excitators_link += neuron.second;
+				}
+			
+			}
+		}
+		
+		if(neurons[n].is_inhibitory()) {	
+			neurons[n].input(.4 * thalamic_values[n] + .5 * excitators_link + inibitors_link);
+	
+		} else {
+			neurons[n].input(thalamic_values[n] + .5 * excitators_link + inibitors_link);
+		}
+		
+			neurons[n].step();
+
+	}
+	
+	return firing_neurons;
 }

@@ -1,6 +1,8 @@
 #include "globals.h"
 #include "neuron.h"
 
+
+
 /*! \class Network
   A neuron network is a \ref neurons "set" of neurons and a \ref links "set" of directional links between them.
 
