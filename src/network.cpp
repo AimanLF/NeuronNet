@@ -157,9 +157,7 @@ std::vector<std::pair<size_t, double>> Network::neighbors(const size_t& n) const
 		if (link.first.first == n) {              
 			connected_neurons.push_back({link.first.second, link.second});
 			
-		} /*else if (link.first.second == n) {
-			connected_neurons.push_back({link.first.first, link.second});
-			}*/
+		}
 	}
 
 	return connected_neurons;
